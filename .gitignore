@@ -69,6 +69,3 @@ bld/
 *.pidb
 *.svclog
 *.scc
-
-# Inventory-System  Demo
-Assets/Demo/
