@@ -1,24 +1,47 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
+using WeaponsInventorySystem.Helpers;
+using WeaponsInventorySystem.Inputs;
 
-public sealed class Weapon : WeaponBase
+namespace WeaponsInventorySystem
 {
-
-    protected override void Update()
+    public class Weapon : WeaponBase
     {
-        // fire
-        if ((w_fire_mode == FireMode.Semi ? Input.GetButtonDown(KeyboardInputManager.FIRE_KEYNAME) : Input.GetButton(KeyboardInputManager.FIRE_KEYNAME)))
+
+        private WeaponSight weaponSight;
+
+        protected override void Awake()
         {
-            Fire();
+            base.Awake();
+            weaponSight = GetComponent<WeaponSight>();
+
         }
 
-        // reload
-        if (Input.GetButtonUp(KeyboardInputManager.RELOAD_KEYNAME))
+        protected override void Update()
         {
-            StartCoroutine(Reload());
+            base.Update();
+
+            // fire
+            if ((w_fire_mode == FireMode.Semi ? Input.GetButtonDown(KeyboardInputManager.FIRE_KEYNAME) : Input.GetButton(KeyboardInputManager.FIRE_KEYNAME)))
+            {
+                Fire();
+            }
+            else
+            {
+                w_firing = false;
+            }
+
+            // reload
+            if (Input.GetButtonUp(KeyboardInputManager.RELOAD_KEYNAME))
+            {
+                StartCoroutine(Reload());
+            }
+
+
         }
 
+        private void OnDisable()
+        {
+            weaponSight.ResetSight();
+        }
     }
-
 }
