@@ -8,7 +8,7 @@ namespace WeaponsInventorySystem.Abstraction
         string Name { get; }
         bool CanFire { get; }
         bool CanReload { get; }
-        bool IsFire { get; }
+        bool IsFiring { get; }
         bool IsReloading { get; }
         int MagazineSize { get; }
         int Magazine { get; }

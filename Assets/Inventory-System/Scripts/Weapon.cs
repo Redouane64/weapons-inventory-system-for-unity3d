@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using WeaponsInventorySystem.Abstraction;
 using WeaponsInventorySystem.Helpers;
 using WeaponsInventorySystem.Inputs;
 

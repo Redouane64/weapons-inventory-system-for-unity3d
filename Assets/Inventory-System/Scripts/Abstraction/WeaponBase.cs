@@ -4,10 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using WeaponsInventorySystem.Abstraction;
 using WeaponsInventorySystem.Helpers;
 
-namespace WeaponsInventorySystem
+namespace WeaponsInventorySystem.Abstraction
 {
     public abstract class WeaponBase : MonoBehaviour, IWeapon
     {
@@ -172,7 +171,7 @@ namespace WeaponsInventorySystem
             get { return w_can_reload; }
         }
 
-        public bool IsFire
+        public bool IsFiring
         {
             get { return w_firing; }
         }
