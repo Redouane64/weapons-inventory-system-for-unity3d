@@ -5,211 +5,289 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using WeaponsInventorySystem.Helpers;
+using WeaponsInventorySystem.Inputs;
 
 namespace WeaponsInventorySystem.Abstraction
 {
-    public abstract class WeaponBase : MonoBehaviour, IWeapon
-    {
-        [SerializeField]
-        protected string w_name;
-        [SerializeField]
-        protected FireMode w_fire_mode;
-        [SerializeField]
-        protected int w_magazine_size;
-        [SerializeField]
-        protected int w_magazine;
-        [SerializeField]
-        protected int w_ammo;
-        [SerializeField]
-        protected float w_fire_rate;
-        [SerializeField]
-        protected float w_fire_range;
-        [SerializeField]
-        protected float w_damage;
-        [SerializeField]
-        protected float w_reload_time;
+	public abstract class WeaponBase : MonoBehaviour, IWeapon
+	{
+		[SerializeField]
+		protected string w_name;
+		[SerializeField]
+		protected FireMode w_fire_mode;
+		[SerializeField]
+		protected SightMode w_sight_mode;
+		[SerializeField]
+		protected int w_magazine_size;
+		[SerializeField]
+		protected int w_magazine;
+		[SerializeField]
+		protected int w_ammo;
+		[SerializeField]
+		protected float w_fire_rate;
+		[SerializeField]
+		protected float w_fire_range;
+		[SerializeField]
+		protected float w_damage;
+		[SerializeField]
+		protected float w_reload_time;
 
-        [SerializeField]
-        protected bool w_firing;
-        [SerializeField]
-        protected bool w_reloading;
-        [SerializeField]
-        protected bool w_can_fire;
-        [SerializeField]
-        protected bool w_can_reload;
+		[SerializeField]
+		protected bool w_firing;
+		[SerializeField]
+		protected bool w_reloading;
+		[SerializeField]
+		protected bool w_can_fire;
+		[SerializeField]
+		protected bool w_can_reload;
+		[SerializeField]
+		protected bool w_can_change_sightmode;
 
-        private float firetime = 0;
+		private float firetime = 0;
 
-        // can fire predicats 
-        protected ActionPredicates can_fire_predicates = new ActionPredicates();
-        protected ActionPredicates can_reload_predicates = new ActionPredicates();
+		// can fire predicats 
+		protected ActionPredicates can_fire_predicates = new ActionPredicates();
+		protected ActionPredicates can_reload_predicates = new ActionPredicates();
+		protected ActionPredicates can_change_sightmod_predicates = new ActionPredicates();
 
-        // events
+		// events
 		public event EventHandler<WeaponEventArgs> OnFires;
 		public event EventHandler<WeaponEventArgs> OnBeginReload;
 		public event EventHandler<WeaponEventArgs> OnEndReload;
+		public event EventHandler<WeaponSightModeChangedEventArgs> OnSightModeChanged;
 
 		protected void RaiseFireEvent()
-        {
-			if(OnFires != null)
+		{
+			if (OnFires != null)
 			{
 				OnFires(null, new WeaponEventArgs(this));
 			}
-        }
+		}
 
-        protected void RaiseBeginReloadEvent()
-        {
-            if (OnBeginReload != null)
-                OnBeginReload(null, new WeaponEventArgs(this));
-        }
+		protected void RaiseBeginReloadEvent()
+		{
+			if (OnBeginReload != null)
+				OnBeginReload(null, new WeaponEventArgs(this));
+		}
 
-        protected void RaiseEndReloadEvent()
-        {
-            if (OnEndReload != null)
-                OnEndReload(null, new WeaponEventArgs(this));
-        }
+		protected void RaiseEndReloadEvent()
+		{
+			if (OnEndReload != null)
+				OnEndReload(null, new WeaponEventArgs(this));
+		}
 
-        // Monobehaviour methods
+		protected void RaiseSightModeChangedEvent()
+		{
+			if (OnSightModeChanged != null)
+			{
+				OnSightModeChanged(this, new WeaponSightModeChangedEventArgs(this, w_sight_mode));
+			}
+		}
 
-        protected virtual void Awake()
-        {
-            can_fire_predicates.AddPredicate(() => w_magazine > 0);
-            can_fire_predicates.AddPredicate(() => !w_reloading);
-            can_fire_predicates.AddPredicate(() => !Inventory.Current.IsChangingItem);
+		// Monobehaviour methods
 
-            can_reload_predicates.AddPredicate(() => !w_reloading);
-            can_reload_predicates.AddPredicate(() => w_ammo > 0);
-            can_reload_predicates.AddPredicate(() => !Inventory.Current.IsChangingItem);
-        }
+		protected virtual void Awake()
+		{
+			can_fire_predicates.AddPredicate(() => w_magazine > 0);
+			can_fire_predicates.AddPredicate(() => !w_reloading);
+			can_fire_predicates.AddPredicate(() => !Inventory.Current.IsChangingItem);
 
-        protected virtual void Update()
-        {
-            w_can_fire = can_fire_predicates.CanExecuteAction();
-            w_can_reload = can_reload_predicates.CanExecuteAction();
-        }
+			can_reload_predicates.AddPredicate(() => !w_reloading);
+			can_reload_predicates.AddPredicate(() => w_ammo > 0);
+			can_reload_predicates.AddPredicate(() => !Inventory.Current.IsChangingItem);
+
+			can_change_sightmod_predicates.AddPredicate(() => !w_reloading);
+			can_change_sightmod_predicates.AddPredicate(() => !Inventory.Current.IsChangingItem);
+		}
+
+		protected virtual void Update()
+		{
+			w_can_fire = can_fire_predicates.CanExecuteAction();
+			w_can_reload = can_reload_predicates.CanExecuteAction();
+			w_can_change_sightmode = can_change_sightmod_predicates.CanExecuteAction();
+		}
 
 
-        // weapon methods 
+		// weapon methods 
 
-        public void Fire()
-        {
-            if (Time.time > firetime && (w_can_fire))
-            {
-                w_firing = true;
-                --w_magazine;
-                firetime = Time.time + w_fire_rate;
-                RaiseFireEvent();
+		public virtual void Fire()
+		{
+			if (Time.time > firetime && (w_can_fire))
+			{
+				w_firing = true;
+				--w_magazine;
+				firetime = Time.time + w_fire_rate;
+				RaiseFireEvent();
 #if DEBUG
             Debug.Log("FIRE: " + w_firing.ToString(), this);
 #endif
-            }
-        }
+			}
+		}
 
-        public IEnumerator Reload()
-        {
+		public virtual IEnumerator Reload()
+		{
 #if DEBUG
         Debug.Log("Reloading...");
 #endif
-            if (!(w_can_reload))
-            {
+			if (!(w_can_reload))
+			{
 #if DEBUG
             Debug.Log("You cannot Reload.");
 #endif
-                yield break;
-            }
-            w_reloading = true;
-            RaiseBeginReloadEvent();
-            yield return new WaitForSeconds(w_reload_time);
+				yield break;
+			}
+			w_reloading = true;
+			RaiseBeginReloadEvent();
+			yield return new WaitForSeconds(w_reload_time);
 
-            if (w_magazine > 0)
-            {
-                w_ammo += w_magazine;
-            }
+			if (w_magazine > 0)
+			{
+				w_ammo += w_magazine;
+			}
 
-            if (w_ammo < w_magazine_size)
-            {
-                w_magazine = w_ammo;
-                w_ammo = 0;
-                //yield break;
-            }
-            else
-            {
-                w_magazine = w_magazine_size;
-                w_ammo -= w_magazine_size;
-                RaiseEndReloadEvent();
-            }
-            w_reloading = false;
+			if (w_ammo < w_magazine_size)
+			{
+				w_magazine = w_ammo;
+				w_ammo = 0;
+				//yield break;
+			}
+			else
+			{
+				w_magazine = w_magazine_size;
+				w_ammo -= w_magazine_size;
+				RaiseEndReloadEvent();
+			}
+			w_reloading = false;
 #if DEBUG
         Debug.Log("Finished Reloading.");
 #endif
-        }
+		}
 
-        public void AddAmmo(int amount)
-        {
-            throw new NotImplementedException();
-        }
+		public virtual void AddAmmo(int amount)
+		{
+			throw new NotImplementedException();
+		}
 
-        // Properties
+		public virtual void ToggleSight()
+		{
+			if (Input.GetButtonUp(KeyboardInputManager.AIM_KEYNAME)
+				&& can_change_sightmod_predicates.CanExecuteAction())
+			{
+				SetSight((SightMode == SightMode.Aim) ? SightMode.Normal : SightMode.Aim);
+			}
 
-        public GameObject WeaponGameObject
-        {
-            get { return this.gameObject; }
-        }
+		}
 
-        public string Name
-        {
-            get { return w_name; }
-        }
+		public void SetSight(SightMode mode)
+		{
+			w_sight_mode = mode;
+			RaiseSightModeChangedEvent();
+		}
 
-        public bool CanFire
-        {
-            get { return w_can_fire; }
-        }
+		// Properties
 
-        public bool CanReload
-        {
-            get { return w_can_reload; }
-        }
+		public GameObject WeaponGameObject
+		{
+			get
+			{
+				return this.gameObject;
+			}
+		}
 
-        public bool IsFiring
-        {
-            get { return w_firing; }
-        }
+		public string Name
+		{
+			get
+			{
+				return w_name;
+			}
+		}
 
-        public bool IsReloading
-        {
-            get { return w_reloading; }
-        }
+		public bool CanFire
+		{
+			get
+			{
+				return w_can_fire;
+			}
+		}
 
-        public int MagazineSize
-        {
-            get { return MagazineSize; }
-        }
+		public bool CanReload
+		{
+			get
+			{
+				return w_can_reload;
+			}
+		}
 
-        public int Magazine
-        {
-            get { return w_magazine; }
-        }
+		public bool IsFiring
+		{
+			get
+			{
+				return w_firing;
+			}
+		}
 
-        public int Ammo
-        {
-            get { return w_ammo; }
-        }
+		public bool IsReloading
+		{
+			get
+			{
+				return w_reloading;
+			}
+		}
 
-        public float FireRate
-        {
-            get { return w_fire_rate; }
-        }
+		public int MagazineSize
+		{
+			get
+			{
+				return MagazineSize;
+			}
+		}
 
-        public float FireRange
-        {
-            get { return w_fire_range; }
-        }
+		public int Magazine
+		{
+			get
+			{
+				return w_magazine;
+			}
+		}
 
-        public float Damage
-        {
-            get { return w_damage; }
-        }
+		public int Ammo
+		{
+			get
+			{
+				return w_ammo;
+			}
+		}
 
-    }
+		public float FireRate
+		{
+			get
+			{
+				return w_fire_rate;
+			}
+		}
+
+		public float FireRange
+		{
+			get
+			{
+				return w_fire_range;
+			}
+		}
+
+		public float Damage
+		{
+			get
+			{
+				return w_damage;
+			}
+		}
+
+		public SightMode SightMode
+		{
+			get
+			{
+				return w_sight_mode;
+			}
+		}
+	}
 }
