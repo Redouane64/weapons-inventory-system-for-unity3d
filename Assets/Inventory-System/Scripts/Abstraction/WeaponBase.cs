@@ -184,6 +184,11 @@ namespace WeaponsInventorySystem.Abstraction
 			RaiseSightModeChangedEvent();
 		}
 
+		public void ResetSight()
+		{
+			SetSight(SightMode.Normal);
+		}
+
 		// Properties
 
 		public GameObject WeaponGameObject

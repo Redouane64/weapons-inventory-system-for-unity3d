@@ -8,15 +8,6 @@ namespace WeaponsInventorySystem
     public class Weapon : WeaponBase
     {
 
-        private WeaponSight weaponSight;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            weaponSight = GetComponent<WeaponSight>();
-
-        }
-
         protected override void Update()
         {
             base.Update();
@@ -37,12 +28,13 @@ namespace WeaponsInventorySystem
                 StartCoroutine(Reload());
             }
 
-
+			// Toggle sight mode
+			ToggleSight();
         }
 
         private void OnDisable()
         {
-            weaponSight.ResetSight();
+			SetSight(SightMode.Normal);
         }
     }
 }

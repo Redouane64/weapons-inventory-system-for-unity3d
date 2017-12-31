@@ -161,6 +161,10 @@ namespace WeaponsInventorySystem
 
 		private void Inventory_OnBeginItemChange(object sender, InventoryWeaponEventArgs e)
 		{
+			if(e.Current.SightMode == SightMode.Aim)
+			{
+				e.Current.ResetSight();
+			}
 		}
 
 		#region IInventory Members

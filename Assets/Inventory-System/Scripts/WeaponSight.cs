@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using WeaponsInventorySystem.Abstraction;
 using WeaponsInventorySystem.Helpers;
 using WeaponsInventorySystem.Inputs;
 
@@ -14,49 +15,33 @@ namespace WeaponsInventorySystem
 
         [SerializeField]
         private float speed = 8f;
-        private bool isAiming = false;
-        private ActionPredicates can_aim_predicates = new ActionPredicates();
 
-		public event EventHandler<WeaponSightEventArgs> WeaponSightModeChanged;
+        private bool isAiming = false;
+		private Weapon weapon;
 
         void Awake()
         {
             ResetSight();
 
-			WeaponSightModeChanged += new EventHandler<WeaponSightEventArgs>(OnWeaponSightChangedHandler);
-
-            can_aim_predicates.AddPredicate(() => !Inventory.Current.CurrentWeapon.IsReloading);
-            can_aim_predicates.AddPredicate(() => !Inventory.Current.IsChangingItem);
+			weapon = GetComponent<Weapon>();
+			weapon.OnSightModeChanged += new EventHandler<WeaponSightModeChangedEventArgs>(WeaponSightToggled);
         }
+
+		private void WeaponSightToggled(object sender, WeaponSightModeChangedEventArgs e)
+		{
+			isAiming = e.Mode == SightMode.Aim;
+		}
 
 		void Update()
         {
-            if (Input.GetButtonUp(KeyboardInputManager.AIM_KEYNAME)
-                && can_aim_predicates.CanExecuteAction())
-			{
-				isAiming = !isAiming;
-			}
-			// TO DO
-			OnWeaponSightModeChanged();
-		}
 
-		private void OnWeaponSightChangedHandler(object sender, WeaponSightEventArgs e)
-		{
-			if (e.IsAiming)
+			if (isAiming)
 			{
 				Aim();
 			}
 			else
 			{
 				Normal();
-			}
-		}
-
-		protected void OnWeaponSightModeChanged()
-		{
-			if(WeaponSightModeChanged != null)
-			{
-				WeaponSightModeChanged(this, new WeaponSightEventArgs(isAiming));
 			}
 		}
 
@@ -73,7 +58,6 @@ namespace WeaponsInventorySystem
         public void ResetSight()
         {
             this.transform.localPosition = w_normal_position;
-            isAiming = false;
         }
 
         public Vector3 AimPosition { get { return w_aim_position; } set { w_aim_position = value; } }

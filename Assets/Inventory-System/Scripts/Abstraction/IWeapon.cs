@@ -25,6 +25,7 @@ namespace WeaponsInventorySystem.Abstraction
 
         void Fire();
 		void ToggleSight();
+		void ResetSight();
         IEnumerator Reload();
         void AddAmmo(int amount);
     }
