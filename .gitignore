@@ -69,3 +69,4 @@ bld/
 *.pidb
 *.svclog
 *.scc
+/Packages
