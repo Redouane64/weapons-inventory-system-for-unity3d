@@ -51,16 +51,16 @@ namespace WeaponsInventorySystem.Abstraction
 		protected ActionPredicates can_change_sightmod_predicates = new ActionPredicates();
 
 		// events
-		public event EventHandler<WeaponEventArgs> OnFires;
+		public event EventHandler<WeaponEventArgs> OnFire;
 		public event EventHandler<WeaponEventArgs> OnBeginReload;
 		public event EventHandler<WeaponEventArgs> OnEndReload;
 		public event EventHandler<WeaponSightModeChangedEventArgs> OnSightModeChanged;
 
 		protected void RaiseFireEvent()
 		{
-			if (OnFires != null)
+			if (OnFire != null)
 			{
-				OnFires(null, new WeaponEventArgs(this));
+				OnFire(null, new WeaponEventArgs(this));
 			}
 		}
 

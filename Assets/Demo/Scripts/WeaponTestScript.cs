@@ -21,7 +21,7 @@ public class WeaponTestScript : MonoBehaviour
 		}
 		else
         {
-			weapon.OnFires += new EventHandler<WeaponEventArgs>(OnFire);
+			weapon.OnFire += new EventHandler<WeaponEventArgs>(OnFire);
             weapon.OnBeginReload += Weapon_OnBeginReload;
             weapon.OnEndReload += Weapon_OnEndReload;
         }
