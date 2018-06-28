@@ -118,22 +118,22 @@ namespace WeaponsInventorySystem.Abstraction
 				--w_magazine;
 				firetime = Time.time + w_fire_rate;
 				RaiseFireEvent();
-#if DEBUG
-            Debug.Log("FIRE: " + w_firing.ToString(), this);
-#endif
+
+	            Debug.Log("FIRE: " + w_firing.ToString(), this);
+
 			}
 		}
 
 		public virtual IEnumerator Reload()
 		{
-#if DEBUG
-        Debug.Log("Reloading...");
-#endif
+
+	        Debug.Log("Reloading...");
+
 			if (!(w_can_reload))
 			{
-#if DEBUG
-            Debug.Log("You cannot Reload.");
-#endif
+
+	            Debug.Log("You cannot Reload.");
+
 				yield break;
 			}
 			w_reloading = true;
@@ -158,9 +158,9 @@ namespace WeaponsInventorySystem.Abstraction
 				RaiseEndReloadEvent();
 			}
 			w_reloading = false;
-#if DEBUG
-        Debug.Log("Finished Reloading.");
-#endif
+
+	        Debug.Log("Finished Reloading.");
+
 		}
 
 		public virtual void AddAmmo(int amount)
