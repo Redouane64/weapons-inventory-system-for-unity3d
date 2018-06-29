@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using WeaponsInventorySystem.Helpers;
 using WeaponsInventorySystem.Inputs;
@@ -51,10 +50,10 @@ namespace WeaponsInventorySystem.Abstraction
 		protected ActionPredicates can_change_sightmod_predicates = new ActionPredicates();
 
 		// events
-		public event EventHandler<WeaponEventArgs> OnFire;
-		public event EventHandler<WeaponEventArgs> OnBeginReload;
-		public event EventHandler<WeaponEventArgs> OnEndReload;
-		public event EventHandler<WeaponSightModeChangedEventArgs> OnSightModeChanged;
+		internal static event EventHandler<WeaponEventArgs> OnFire;
+		internal static event EventHandler<WeaponEventArgs> OnBeginReload;
+		internal static event EventHandler<WeaponEventArgs> OnEndReload;
+		internal static event EventHandler<WeaponSightModeChangedEventArgs> OnSightModeChanged;
 
 		protected void RaiseFireEvent()
 		{

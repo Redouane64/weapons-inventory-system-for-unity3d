@@ -58,7 +58,45 @@ namespace WeaponsInventorySystem
 			}
 		}
 
+
 		// monobehavior methods
+
+		private void OnEnable()
+		{
+			Weapon.OnFire += new EventHandler<WeaponEventArgs>(OnWeaponFire);
+			Weapon.OnBeginReload += new EventHandler<WeaponEventArgs>(OnWeaponBeginReload);
+			Weapon.OnEndReload += new EventHandler<WeaponEventArgs>(OnWeaponEndReload);
+		}
+
+		private void OnDisable()
+		{
+			Weapon.OnFire -= new EventHandler<WeaponEventArgs>(OnWeaponFire);
+			Weapon.OnBeginReload -= new EventHandler<WeaponEventArgs>(OnWeaponBeginReload);
+			Weapon.OnEndReload -= new EventHandler<WeaponEventArgs>(OnWeaponEndReload);
+		}
+		private void OnWeaponEndReload(object sender, WeaponEventArgs e)
+		{
+			if (OnEndReload != null)
+			{
+				OnEndReload(null, e);
+			}
+		}
+
+		private void OnWeaponBeginReload(object sender, WeaponEventArgs e)
+		{
+			if (OnBeginReload != null)
+			{
+				OnBeginReload(null, e);
+			}
+		}
+
+		private void OnWeaponFire(object sender, WeaponEventArgs e)
+		{
+			if (OnFire != null)
+			{
+				OnFire(null, e);
+			}
+		}
 
 		private void Awake()
 		{
