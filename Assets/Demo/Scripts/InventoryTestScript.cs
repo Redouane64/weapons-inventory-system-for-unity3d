@@ -16,12 +16,6 @@ public class InventoryTestScript : MonoBehaviour
 		{
 			Debug.LogException(new NullReferenceException("Field 'inventory' must be initialized."));
 		}
-		else
-		{
-			inventory.OnBeginItemChange += Inventory_OnBeginItemChange;
-			inventory.OnItemChanged += Inventory_OnItemChanged;
-			inventory.OnEndItemChange += Inventory_OnEndItemChange;
-		}
 	}
 
 	private void Inventory_OnEndItemChange(object sender, InventoryWeaponEventArgs e)
@@ -48,4 +42,28 @@ public class InventoryTestScript : MonoBehaviour
 	{
 
 	}
+
+	private void OnEnable()
+	{
+		if (inventory != null)
+		{
+			inventory.OnBeginItemChange += Inventory_OnBeginItemChange;
+			inventory.OnItemChanged += Inventory_OnItemChanged;
+			inventory.OnEndItemChange += Inventory_OnEndItemChange;
+		}
+
+	}
+
+	private void OnDisable()
+	{
+		if (inventory != null)
+		{
+			inventory.OnBeginItemChange -= Inventory_OnBeginItemChange;
+			inventory.OnItemChanged -= Inventory_OnItemChanged;
+			inventory.OnEndItemChange -= Inventory_OnEndItemChange;
+		}
+
+	}
+
+
 }

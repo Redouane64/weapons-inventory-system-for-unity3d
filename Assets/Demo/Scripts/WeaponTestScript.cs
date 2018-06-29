@@ -17,15 +17,29 @@ public class WeaponTestScript : MonoBehaviour
     {
         if (weapon == null)
 		{
-			Debug.LogException(new NullReferenceException("Field 'weapon' must be initialized."));
-		}
-		else
-        {
 			weapon.OnFire += new EventHandler<WeaponEventArgs>(OnFire);
             weapon.OnBeginReload += Weapon_OnBeginReload;
             weapon.OnEndReload += Weapon_OnEndReload;
         }
     }
+
+	private void OnDisable()
+	{
+		if (weapon == null)
+		{
+			weapon.OnFire -= new EventHandler<WeaponEventArgs>(OnFire);
+			weapon.OnBeginReload -= Weapon_OnBeginReload;
+			weapon.OnEndReload -= Weapon_OnEndReload;
+		}
+	}
+
+	private void Awake()
+	{
+		if (weapon == null)
+		{
+			Debug.LogException(new NullReferenceException("Field 'weapon' must be initialized."));
+		}
+	}
 
 	private void OnFire(object sender, WeaponEventArgs e)
 	{
