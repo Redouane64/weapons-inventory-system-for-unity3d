@@ -1,12 +1,9 @@
-﻿using System;
-using UnityEngine;
-using WeaponsInventorySystem.Abstraction;
+﻿using UnityEngine;
 using WeaponsInventorySystem.Helpers;
-using WeaponsInventorySystem.Inputs;
 
 namespace WeaponsInventorySystem
 {
-    public class WeaponSight : MonoBehaviour
+	public class WeaponSight : MonoBehaviour
     {
         [SerializeField]
         private Vector3 w_aim_position;
@@ -24,7 +21,6 @@ namespace WeaponsInventorySystem
             ResetSight();
 
 			weapon = GetComponent<Weapon>();
-			weapon.OnSightModeChanged += new EventHandler<WeaponSightModeChangedEventArgs>(WeaponSightToggled);
         }
 
 		private void WeaponSightToggled(object sender, WeaponSightModeChangedEventArgs e)
