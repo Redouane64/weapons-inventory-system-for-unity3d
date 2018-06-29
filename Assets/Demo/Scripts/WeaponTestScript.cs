@@ -1,44 +1,35 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System;
 using WeaponsInventorySystem;
-using WeaponsInventorySystem.Abstraction;
 using WeaponsInventorySystem.Helpers;
 
 public class WeaponTestScript : MonoBehaviour
 {
 
-    [SerializeField]
-    private Weapon weapon;
-
     private int accumulator = 0;
 
     private void OnEnable()
     {
-        if (weapon == null)
+        if (Inventory.Current != null)
 		{
-			weapon.OnFire += new EventHandler<WeaponEventArgs>(OnFire);
-            weapon.OnBeginReload += Weapon_OnBeginReload;
-            weapon.OnEndReload += Weapon_OnEndReload;
-        }
+			Inventory.Current.OnFire += new EventHandler<WeaponEventArgs>(OnFire);
+			Inventory.Current.OnBeginReload += Weapon_OnBeginReload;
+			Inventory.Current.OnEndReload += Weapon_OnEndReload;
+		}
     }
 
 	private void OnDisable()
 	{
-		if (weapon == null)
+		if (Inventory.Current != null)
 		{
-			weapon.OnFire -= new EventHandler<WeaponEventArgs>(OnFire);
-			weapon.OnBeginReload -= Weapon_OnBeginReload;
-			weapon.OnEndReload -= Weapon_OnEndReload;
+			Inventory.Current.OnFire -= new EventHandler<WeaponEventArgs>(OnFire);
+			Inventory.Current.OnBeginReload -= Weapon_OnBeginReload;
+			Inventory.Current.OnEndReload -= Weapon_OnEndReload;
 		}
 	}
 
 	private void Awake()
 	{
-		if (weapon == null)
-		{
-			Debug.LogException(new NullReferenceException("Field 'weapon' must be initialized."));
-		}
 	}
 
 	private void OnFire(object sender, WeaponEventArgs e)
